@@ -1,0 +1,12 @@
+--- src/plugins/auth-pam/auth-pam.c.orig	2018-08-09 22:31:42.939843549 +0800
++++ src/plugins/auth-pam/auth-pam.c	2018-08-09 22:32:21.400486660 +0800
+@@ -689,6 +689,10 @@
+         }
+         if (status == PAM_SUCCESS)
+         {
++            status = pam_open_session(pamh, 0);
++        }
++        if (status == PAM_SUCCESS)
++        {
+             ret = 1;
+         }
