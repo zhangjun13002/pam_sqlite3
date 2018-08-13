@@ -29,7 +29,7 @@
     client-disconnect /etc/openvpn/disconnect.py
 
 disconnect.py <br />
-    \#!/usr/bin/python
+    \#\!/usr/bin/python
 
     import os
     import time
