@@ -29,8 +29,9 @@
     client-disconnect /etc/openvpn/disconnect.py
 
 disconnect.py <br />
-    \#\!/usr/bin/python
-
+```python
+    #!/usr/bin/python
+    
     import os
     import time
     import sqlite3
@@ -44,3 +45,4 @@ disconnect.py <br />
     conn.execute(query)
     conn.commit()
     conn.close()
+```
