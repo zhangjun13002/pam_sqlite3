@@ -1,48 +1,40 @@
 # pam_sqlite3
 
+#### 说明
 
-## create pam service 
-    /etc/pam.d/openvpn
-    auth        required    pam_sqlite3.so db=/etc/openvpn/openvpn.db table=openvpn usercolumn=username passwdcolumn=password active=1 expiredcolumn=enddate logincolumn=logintime logoutcolumn=logouttime crypt=1
-    account     required    pam_sqlite3.so db=/etc/openvpn/openvpn.db table=openvpn usercolumn=username passwdcolumn=password active=1 expiredcolumn=enddate logincolumn=logintime logoutcolumn=logouttime crypt=1
- crypt: <br />
- 0 = No encryption <br />
- 1 = md5 <br />
- 2 = sha1 <br />
+此模块提供对针对OpenVPN利用SQLite进行身份验证的支持。
 
-## create sqlite3 file
-    /etc/openvpn/openvpn.db
-    create table openvpn(
-         username text not null, 
-         password text not null, 
-         active int, 
-         enddate text, 
-         logintime text,
-         logouttime text, -- Not yet implemented
-         remote text
-    );
 
-## Run command cmd(or script) when the client connects or disconnects.
-    /etc/openvpn/server/server.conf
-    script-security 2
-    client-connect /etc/openvpn/connect.py
-    client-disconnect /etc/openvpn/disconnect.py
+#### 安装
 
-disconnect.py <br />
-```python
-#!/usr/bin/python
-    
-import os
-import time
-import sqlite3
-   
-clientname = os.environ['common_name']
-clientip = os.environ['trusted_ip']
-logouttime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-   
-conn = sqlite3.connect("/etc/openvpn/openvpn.db")
-query = "update openvpn set logouttime='%s', remote='%s' where username='%s'" % (logouttime, clientip, clientname)
-conn.execute(query)
-conn.commit()
-conn.close()
+1. \# cd pam_sqlite3
+2. \# make
+3. \# cp pam_sqlite3.so /lib64/security/
+
+#### 设置
+
+1. 创建服务认证
+
+```
+# /etc/pam.d/openvpn
+# crypt:  
+# 0 = No encryption  
+# 1 = md5  
+# 2 = sha1  
+auth        required    pam_sqlite3.so db=/etc/openvpn/openvpn.db table=t_user user=username passwd=password expire=expire crypt=1
+account     required    pam_sqlite3.so db=/etc/openvpn/openvpn.db table=t_user user=username passwd=password expire=expire crypt=1
+```
+
+
+2. 创建sqlite3数据库
+
+```
+/etc/openvpn/openvpn.db
+
+create table t_user (
+     username text not null, 
+     password text not null, 
+     active int, 
+     expire text
+);
 ```
